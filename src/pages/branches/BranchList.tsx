@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Building2, Search, Plus, Filter, Eye, Edit, Trash2, MapPin, Users, Package, DollarSign } from 'lucide-react';
+import BranchModal from '../../components/modals/BranchModal';
+import ConfirmModal from '../../components/modals/ConfirmModal';
 
 interface BranchListProps {
   onViewDetail: (id: string) => void;
@@ -7,6 +9,11 @@ interface BranchListProps {
 
 const BranchList: React.FC<BranchListProps> = ({ onViewDetail }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showBranchModal, setShowBranchModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
+  const [selectedBranch, setSelectedBranch] = useState<any>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [branchToDelete, setBranchToDelete] = useState<any>(null);
 
   // Mock branch data
   const branches = [
@@ -89,6 +96,35 @@ const BranchList: React.FC<BranchListProps> = ({ onViewDetail }) => {
     branch.manager.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleAddBranch = () => {
+    setModalMode('add');
+    setSelectedBranch(null);
+    setShowBranchModal(true);
+  };
+
+  const handleEditBranch = (branch: any) => {
+    setModalMode('edit');
+    setSelectedBranch(branch);
+    setShowBranchModal(true);
+  };
+
+  const handleViewBranch = (branch: any) => {
+    setModalMode('view');
+    setSelectedBranch(branch);
+    setShowBranchModal(true);
+  };
+
+  const handleDeleteBranch = (branch: any) => {
+    setBranchToDelete(branch);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    // Handle delete logic here
+    console.log('Deleting branch:', branchToDelete);
+    setBranchToDelete(null);
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -97,7 +133,10 @@ const BranchList: React.FC<BranchListProps> = ({ onViewDetail }) => {
           <h1 className="text-2xl font-bold text-gray-900">Branches Management</h1>
           <p className="text-gray-600 mt-1">Manage branch locations and operations</p>
         </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+        <button 
+          onClick={handleAddBranch}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+        >
           <Plus className="w-4 h-4" />
           <span>Add New Branch</span>
         </button>
@@ -196,10 +235,25 @@ const BranchList: React.FC<BranchListProps> = ({ onViewDetail }) => {
               >
                 <Eye className="w-4 h-4" />
               </button>
-              <button className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors" title="Edit">
+              <button 
+                onClick={() => handleEditBranch(branch)}
+                className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors" 
+                title="Edit"
+              >
                 <Edit className="w-4 h-4" />
               </button>
-              <button className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Delete">
+              <button 
+                onClick={() => handleViewBranch(branch)}
+                className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" 
+                title="View Details"
+              >
+                <Eye className="w-4 h-4" />
+              </button>
+              <button 
+                onClick={() => handleDeleteBranch(branch)}
+                className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors" 
+                title="Delete"
+              >
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
@@ -245,6 +299,25 @@ const BranchList: React.FC<BranchListProps> = ({ onViewDetail }) => {
           </div>
         </div>
       )}
+
+      {/* Branch Modal */}
+      <BranchModal
+        isOpen={showBranchModal}
+        onClose={() => setShowBranchModal(false)}
+        mode={modalMode}
+        branch={selectedBranch}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Branch"
+        message={`Are you sure you want to delete branch ${branchToDelete?.name}? This action cannot be undone.`}
+        confirmText="Delete"
+        type="danger"
+      />
     </div>
   );
 };

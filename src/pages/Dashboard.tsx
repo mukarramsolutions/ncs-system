@@ -1,11 +1,15 @@
 import React from 'react';
+import { useState } from 'react';
 import { Package, Users, UserCheck, Building2, DollarSign, Truck, Clock, CheckCircle } from 'lucide-react';
 import InfoCard from '../components/ui/InfoCard';
 import RevenueChart from '../components/charts/RevenueChart';
 import StaffRevenueChart from '../components/charts/StaffRevenueChart';
 import RecentActivity from '../components/ui/RecentActivity';
+import GenerateReportModal from '../components/modals/GenerateReportModal';
 
 const Dashboard: React.FC = () => {
+  const [showReportModal, setShowReportModal] = useState(false);
+
   const infoCards = [
     { title: 'Total Parcels', value: '2,847', icon: Package, color: 'blue' },
     { title: 'Customers', value: '1,329', icon: Users, color: 'green' },
@@ -26,7 +30,10 @@ const Dashboard: React.FC = () => {
           <p className="text-gray-600 mt-1">Welcome back! Here's what's happening with your logistics.</p>
         </div>
         <div className="flex items-center space-x-3">
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+          <button 
+            onClick={() => setShowReportModal(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
             Generate Report
           </button>
         </div>
@@ -59,6 +66,12 @@ const Dashboard: React.FC = () => {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
         <RecentActivity />
       </div>
+
+      {/* Generate Report Modal */}
+      <GenerateReportModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+      />
     </div>
   );
 };

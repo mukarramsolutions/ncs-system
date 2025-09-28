@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Users, Search, Plus, Filter, Eye, Edit, Trash2, Package } from 'lucide-react';
+import CustomerModal from '../../components/modals/CustomerModal';
+import ConfirmModal from '../../components/modals/ConfirmModal';
 
 interface CustomerListProps {
   onViewDetail: (id: string) => void;
@@ -7,6 +9,11 @@ interface CustomerListProps {
 
 const CustomerList: React.FC<CustomerListProps> = ({ onViewDetail }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showCustomerModal, setShowCustomerModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
+  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [customerToDelete, setCustomerToDelete] = useState<any>(null);
 
   // Mock customer data
   const customers = [
@@ -79,6 +86,35 @@ const CustomerList: React.FC<CustomerListProps> = ({ onViewDetail }) => {
     customer.phone.includes(searchTerm)
   );
 
+  const handleAddCustomer = () => {
+    setModalMode('add');
+    setSelectedCustomer(null);
+    setShowCustomerModal(true);
+  };
+
+  const handleEditCustomer = (customer: any) => {
+    setModalMode('edit');
+    setSelectedCustomer(customer);
+    setShowCustomerModal(true);
+  };
+
+  const handleViewCustomer = (customer: any) => {
+    setModalMode('view');
+    setSelectedCustomer(customer);
+    setShowCustomerModal(true);
+  };
+
+  const handleDeleteCustomer = (customer: any) => {
+    setCustomerToDelete(customer);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    // Handle delete logic here
+    console.log('Deleting customer:', customerToDelete);
+    setCustomerToDelete(null);
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -87,7 +123,10 @@ const CustomerList: React.FC<CustomerListProps> = ({ onViewDetail }) => {
           <h1 className="text-2xl font-bold text-gray-900">Customers Management</h1>
           <p className="text-gray-600 mt-1">Manage customer information and relationships</p>
         </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+        <button 
+          onClick={handleAddCustomer}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+        >
           <Plus className="w-4 h-4" />
           <span>Add New Customer</span>
         </button>
@@ -177,10 +216,25 @@ const CustomerList: React.FC<CustomerListProps> = ({ onViewDetail }) => {
                       >
                         <Eye className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors" title="Edit">
+                      <button 
+                        onClick={() => handleEditCustomer(customer)}
+                        className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors" 
+                        title="Edit"
+                      >
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Delete">
+                      <button 
+                        onClick={() => handleViewCustomer(customer)}
+                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" 
+                        title="View Details"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteCustomer(customer)}
+                        className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors" 
+                        title="Delete"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -217,6 +271,25 @@ const CustomerList: React.FC<CustomerListProps> = ({ onViewDetail }) => {
           </div>
         </div>
       )}
+
+      {/* Customer Modal */}
+      <CustomerModal
+        isOpen={showCustomerModal}
+        onClose={() => setShowCustomerModal(false)}
+        mode={modalMode}
+        customer={selectedCustomer}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Customer"
+        message={`Are you sure you want to delete customer ${customerToDelete?.name}? This action cannot be undone.`}
+        confirmText="Delete"
+        type="danger"
+      />
     </div>
   );
 };

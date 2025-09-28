@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { UserCheck, Search, Plus, Filter, Eye, Edit, Trash2, Package, DollarSign } from 'lucide-react';
+import StaffModal from '../../components/modals/StaffModal';
+import ConfirmModal from '../../components/modals/ConfirmModal';
 
 interface StaffListProps {
   onViewDetail: (id: string) => void;
@@ -8,6 +10,11 @@ interface StaffListProps {
 const StaffList: React.FC<StaffListProps> = ({ onViewDetail }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
+  const [showStaffModal, setShowStaffModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
+  const [selectedStaff, setSelectedStaff] = useState<any>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [staffToDelete, setStaffToDelete] = useState<any>(null);
 
   // Mock staff data
   const staff = [
@@ -102,6 +109,35 @@ const StaffList: React.FC<StaffListProps> = ({ onViewDetail }) => {
     return matchesSearch && matchesRole;
   });
 
+  const handleAddStaff = () => {
+    setModalMode('add');
+    setSelectedStaff(null);
+    setShowStaffModal(true);
+  };
+
+  const handleEditStaff = (staff: any) => {
+    setModalMode('edit');
+    setSelectedStaff(staff);
+    setShowStaffModal(true);
+  };
+
+  const handleViewStaff = (staff: any) => {
+    setModalMode('view');
+    setSelectedStaff(staff);
+    setShowStaffModal(true);
+  };
+
+  const handleDeleteStaff = (staff: any) => {
+    setStaffToDelete(staff);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    // Handle delete logic here
+    console.log('Deleting staff:', staffToDelete);
+    setStaffToDelete(null);
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -110,7 +146,10 @@ const StaffList: React.FC<StaffListProps> = ({ onViewDetail }) => {
           <h1 className="text-2xl font-bold text-gray-900">Staff Management</h1>
           <p className="text-gray-600 mt-1">Manage staff members and their performance</p>
         </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+        <button 
+          onClick={handleAddStaff}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+        >
           <Plus className="w-4 h-4" />
           <span>Add New Staff</span>
         </button>
@@ -210,10 +249,25 @@ const StaffList: React.FC<StaffListProps> = ({ onViewDetail }) => {
                       >
                         <Eye className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors" title="Edit">
+                      <button 
+                        onClick={() => handleEditStaff(member)}
+                        className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors" 
+                        title="Edit"
+                      >
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Delete">
+                      <button 
+                        onClick={() => handleViewStaff(member)}
+                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" 
+                        title="View Details"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteStaff(member)}
+                        className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors" 
+                        title="Delete"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -250,6 +304,25 @@ const StaffList: React.FC<StaffListProps> = ({ onViewDetail }) => {
           </div>
         </div>
       )}
+
+      {/* Staff Modal */}
+      <StaffModal
+        isOpen={showStaffModal}
+        onClose={() => setShowStaffModal(false)}
+        mode={modalMode}
+        staff={selectedStaff}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Staff Member"
+        message={`Are you sure you want to delete staff member ${staffToDelete?.name}? This action cannot be undone.`}
+        confirmText="Delete"
+        type="danger"
+      />
     </div>
   );
 };

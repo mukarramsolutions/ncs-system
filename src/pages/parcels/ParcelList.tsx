@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Package, Search, Plus, Filter, Eye, Edit, Trash2, UserPlus, Printer } from 'lucide-react';
+import ParcelModal from '../../components/modals/ParcelModal';
+import ConfirmModal from '../../components/modals/ConfirmModal';
 
 interface ParcelListProps {
   onViewDetail: (id: string) => void;
@@ -8,6 +10,11 @@ interface ParcelListProps {
 const ParcelList: React.FC<ParcelListProps> = ({ onViewDetail }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showParcelModal, setShowParcelModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
+  const [selectedParcel, setSelectedParcel] = useState<any>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [parcelToDelete, setParcelToDelete] = useState<any>(null);
 
   // Mock parcel data
   const parcels = [
@@ -96,6 +103,35 @@ const ParcelList: React.FC<ParcelListProps> = ({ onViewDetail }) => {
     return matchesSearch && matchesStatus;
   });
 
+  const handleAddParcel = () => {
+    setModalMode('add');
+    setSelectedParcel(null);
+    setShowParcelModal(true);
+  };
+
+  const handleEditParcel = (parcel: any) => {
+    setModalMode('edit');
+    setSelectedParcel(parcel);
+    setShowParcelModal(true);
+  };
+
+  const handleViewParcel = (parcel: any) => {
+    setModalMode('view');
+    setSelectedParcel(parcel);
+    setShowParcelModal(true);
+  };
+
+  const handleDeleteParcel = (parcel: any) => {
+    setParcelToDelete(parcel);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    // Handle delete logic here
+    console.log('Deleting parcel:', parcelToDelete);
+    setParcelToDelete(null);
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -104,7 +140,10 @@ const ParcelList: React.FC<ParcelListProps> = ({ onViewDetail }) => {
           <h1 className="text-2xl font-bold text-gray-900">Parcels Management</h1>
           <p className="text-gray-600 mt-1">Track and manage all parcels in the system</p>
         </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+        <button 
+          onClick={handleAddParcel}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+        >
           <Plus className="w-4 h-4" />
           <span>Add New Parcel</span>
         </button>
@@ -199,8 +238,19 @@ const ParcelList: React.FC<ParcelListProps> = ({ onViewDetail }) => {
                       >
                         <Eye className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors" title="Edit">
+                      <button 
+                        onClick={() => handleEditParcel(parcel)}
+                        className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors" 
+                        title="Edit"
+                      >
                         <Edit className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleViewParcel(parcel)}
+                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" 
+                        title="View Details"
+                      >
+                        <Eye className="w-4 h-4" />
                       </button>
                       {!parcel.assignedStaff && (
                         <button className="p-2 text-purple-600 hover:bg-purple-100 rounded-lg transition-colors" title="Assign Staff">
@@ -210,7 +260,14 @@ const ParcelList: React.FC<ParcelListProps> = ({ onViewDetail }) => {
                       <button className="p-2 text-orange-600 hover:bg-orange-100 rounded-lg transition-colors" title="Print Label">
                         <Printer className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Delete">
+                      <button className="p-2 text-orange-600 hover:bg-orange-100 rounded-lg transition-colors" title="Print Label">
+                        <Printer className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteParcel(parcel)}
+                        className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors" 
+                        title="Delete"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -247,6 +304,25 @@ const ParcelList: React.FC<ParcelListProps> = ({ onViewDetail }) => {
           </div>
         </div>
       )}
+
+      {/* Parcel Modal */}
+      <ParcelModal
+        isOpen={showParcelModal}
+        onClose={() => setShowParcelModal(false)}
+        mode={modalMode}
+        parcel={selectedParcel}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Parcel"
+        message={`Are you sure you want to delete parcel ${parcelToDelete?.trackingNumber}? This action cannot be undone.`}
+        confirmText="Delete"
+        type="danger"
+      />
     </div>
   );
 };
