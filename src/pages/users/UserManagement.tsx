@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, Search, Plus, Filter, Eye, Edit, Trash2, Shield, UserCheck, X } from 'lucide-react';
+import { Users, Search, Plus, Filter, Eye, CreditCard as Edit, Trash2, Shield, UserCheck, X } from 'lucide-react';
 import UserModal from '../../components/modals/UserModal';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 
