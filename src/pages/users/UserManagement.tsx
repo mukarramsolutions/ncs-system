@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
 import { Users, Search, Plus, Filter, Eye, Edit, Trash2, Shield, UserCheck, X } from 'lucide-react';
+import UserModal from '../../components/modals/UserModal';
+import ConfirmModal from '../../components/modals/ConfirmModal';
 
 const UserManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<any>(null);
 
   // Mock user data
   const users = [
@@ -100,6 +107,35 @@ const UserManagement: React.FC = () => {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
+  const handleAddUser = () => {
+    setModalMode('add');
+    setSelectedUser(null);
+    setShowUserModal(true);
+  };
+
+  const handleEditUser = (user: any) => {
+    setModalMode('edit');
+    setSelectedUser(user);
+    setShowUserModal(true);
+  };
+
+  const handleViewUser = (user: any) => {
+    setModalMode('view');
+    setSelectedUser(user);
+    setShowUserModal(true);
+  };
+
+  const handleDeleteUser = (user: any) => {
+    setUserToDelete(user);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    // Handle delete logic here
+    console.log('Deleting user:', userToDelete);
+    setUserToDelete(null);
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -108,7 +144,10 @@ const UserManagement: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
           <p className="text-gray-600 mt-1">Manage users, roles, and permissions</p>
         </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+        <button 
+          onClick={handleAddUser}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+        >
           <Plus className="w-4 h-4" />
           <span>Add New User</span>
         </button>
@@ -197,16 +236,28 @@ const UserManagement: React.FC = () => {
                   <td className="py-4 px-6 text-gray-900">{user.joinDate}</td>
                   <td className="py-4 px-6">
                     <div className="flex items-center justify-center space-x-2">
-                      <button className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" title="View Details">
+                      <button 
+                        onClick={() => handleViewUser(user)}
+                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" 
+                        title="View Details"
+                      >
                         <Eye className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors" title="Edit">
+                      <button 
+                        onClick={() => handleEditUser(user)}
+                        className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors" 
+                        title="Edit"
+                      >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button className="p-2 text-orange-600 hover:bg-orange-100 rounded-lg transition-colors" title="Manage Permissions">
                         <Shield className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Delete">
+                      <button 
+                        onClick={() => handleDeleteUser(user)}
+                        className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors" 
+                        title="Delete"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -302,6 +353,25 @@ const UserManagement: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* User Modal */}
+      <UserModal
+        isOpen={showUserModal}
+        onClose={() => setShowUserModal(false)}
+        mode={modalMode}
+        user={selectedUser}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete User"
+        message={`Are you sure you want to delete user ${userToDelete?.name}? This action cannot be undone and will revoke their access to the system.`}
+        confirmText="Delete"
+        type="danger"
+      />
     </div>
   );
 };
