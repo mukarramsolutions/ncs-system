@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { UserCheck, Search, Plus, Filter, Eye, CreditCard as Edit, Trash2, Package, DollarSign } from 'lucide-react';
+import { generateStaffReport } from '../../utils/pdfGenerator';
+import { generateStaffExcel } from '../../utils/excelGenerator';
 import StaffModal from '../../components/modals/StaffModal';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 
@@ -138,6 +140,14 @@ const StaffList: React.FC<StaffListProps> = ({ onViewDetail }) => {
     setStaffToDelete(null);
   };
 
+  const handleExportPDF = () => {
+    generateStaffReport(filteredStaff);
+  };
+
+  const handleExportExcel = () => {
+    generateStaffExcel(filteredStaff);
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -153,6 +163,20 @@ const StaffList: React.FC<StaffListProps> = ({ onViewDetail }) => {
           <Plus className="w-4 h-4" />
           <span>Add New Staff</span>
         </button>
+        <div className="flex items-center space-x-2">
+          <button 
+            onClick={handleExportPDF}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Export PDF
+          </button>
+          <button 
+            onClick={handleExportExcel}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Export Excel
+          </button>
+        </div>
       </div>
 
       {/* Search and Filters */}

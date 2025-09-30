@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { DollarSign, TrendingUp, Download, Calendar, Building2, Users } from 'lucide-react';
+import { generateRevenueReport } from '../../utils/pdfGenerator';
+import { generateRevenueExcel } from '../../utils/excelGenerator';
 
 const RevenuesDashboard: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('monthly');
@@ -42,6 +44,14 @@ const RevenuesDashboard: React.FC = () => {
   const maxRevenue = Math.max(...revenueStats.byBranch.map(b => b.revenue));
   const maxMonthly = Math.max(...revenueStats.monthlyTrend.map(m => m.revenue));
 
+  const handleExportPDF = () => {
+    generateRevenueReport(revenueStats);
+  };
+
+  const handleExportExcel = () => {
+    generateRevenueExcel(revenueStats);
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -64,6 +74,20 @@ const RevenuesDashboard: React.FC = () => {
           <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
             <Download className="w-4 h-4" />
             <span>Export Report</span>
+          </button>
+          <button 
+            onClick={handleExportPDF}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2"
+          >
+            <Download className="w-4 h-4" />
+            <span>PDF Report</span>
+          </button>
+          <button 
+            onClick={handleExportExcel}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
+          >
+            <Download className="w-4 h-4" />
+            <span>Excel Report</span>
           </button>
         </div>
       </div>
@@ -239,7 +263,10 @@ const RevenuesDashboard: React.FC = () => {
               </div>
             </button>
 
-            <button className="w-full flex items-center justify-between p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <button 
+              onClick={handleExportPDF}
+              className="w-full flex items-center justify-between p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
               <div className="flex items-center space-x-3">
                 <Download className="w-5 h-5 text-green-600" />
                 <div>
@@ -249,7 +276,10 @@ const RevenuesDashboard: React.FC = () => {
               </div>
             </button>
 
-            <button className="w-full flex items-center justify-between p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <button 
+              onClick={handleExportExcel}
+              className="w-full flex items-center justify-between p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
               <div className="flex items-center space-x-3">
                 <Download className="w-5 h-5 text-purple-600" />
                 <div>

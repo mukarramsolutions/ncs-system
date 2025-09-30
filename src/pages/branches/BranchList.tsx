@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Building2, Search, Plus, Filter, Eye, CreditCard as Edit, Trash2, MapPin, Users, Package, DollarSign } from 'lucide-react';
+import { generateBranchReport } from '../../utils/pdfGenerator';
+import { generateBranchExcel } from '../../utils/excelGenerator';
 import BranchModal from '../../components/modals/BranchModal';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 
@@ -125,6 +127,14 @@ const BranchList: React.FC<BranchListProps> = ({ onViewDetail }) => {
     setBranchToDelete(null);
   };
 
+  const handleExportPDF = () => {
+    generateBranchReport(filteredBranches);
+  };
+
+  const handleExportExcel = () => {
+    generateBranchExcel(filteredBranches);
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -140,6 +150,20 @@ const BranchList: React.FC<BranchListProps> = ({ onViewDetail }) => {
           <Plus className="w-4 h-4" />
           <span>Add New Branch</span>
         </button>
+        <div className="flex items-center space-x-2">
+          <button 
+            onClick={handleExportPDF}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Export PDF
+          </button>
+          <button 
+            onClick={handleExportExcel}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Export Excel
+          </button>
+        </div>
       </div>
 
       {/* Search and Filters */}

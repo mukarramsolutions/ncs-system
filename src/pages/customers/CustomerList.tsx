@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Users, Search, Plus, Filter, Eye, CreditCard as Edit, Trash2, Package } from 'lucide-react';
+import { generateCustomerReport } from '../../utils/pdfGenerator';
+import { generateCustomerExcel } from '../../utils/excelGenerator';
 import CustomerModal from '../../components/modals/CustomerModal';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 
@@ -115,6 +117,14 @@ const CustomerList: React.FC<CustomerListProps> = ({ onViewDetail }) => {
     setCustomerToDelete(null);
   };
 
+  const handleExportPDF = () => {
+    generateCustomerReport(filteredCustomers);
+  };
+
+  const handleExportExcel = () => {
+    generateCustomerExcel(filteredCustomers);
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -130,6 +140,20 @@ const CustomerList: React.FC<CustomerListProps> = ({ onViewDetail }) => {
           <Plus className="w-4 h-4" />
           <span>Add New Customer</span>
         </button>
+        <div className="flex items-center space-x-2">
+          <button 
+            onClick={handleExportPDF}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Export PDF
+          </button>
+          <button 
+            onClick={handleExportExcel}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Export Excel
+          </button>
+        </div>
       </div>
 
       {/* Search and Filters */}

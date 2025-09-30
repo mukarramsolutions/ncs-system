@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Login from './pages/auth/Login';
+import TrackingPage from './pages/tracking/TrackingPage';
 import Sidebar from './components/layout/Sidebar';
 import TopNavbar from './components/layout/TopNavbar';
 import Dashboard from './pages/Dashboard';
@@ -15,9 +17,30 @@ import UserManagement from './pages/users/UserManagement';
 import Settings from './pages/settings/Settings';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [trackingNumber, setTrackingNumber] = useState<string | null>(null);
+
+  // Check if we're on tracking page
+  const urlParams = new URLSearchParams(window.location.search);
+  const trackParam = urlParams.get('track');
+  
+  if (trackParam && !trackingNumber) {
+    setTrackingNumber(trackParam);
+    return <TrackingPage trackingNumber={trackParam} />;
+  }
+
+  const handleLogin = (credentials: { username: string; password: string }) => {
+    // Handle login logic here
+    console.log('Login credentials:', credentials);
+    setIsAuthenticated(true);
+  };
+
+  if (!isAuthenticated) {
+    return <Login onLogin={handleLogin} />;
+  }
 
   const renderPage = () => {
     switch (currentPage) {
