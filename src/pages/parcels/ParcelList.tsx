@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Package, Search, Plus, Filter, Eye, CreditCard as Edit, Trash2, UserPlus, Printer } from 'lucide-react';
+import { generateParcelLabel, generateParcelReport } from '../../utils/pdfGenerator';
+import { generateParcelExcel } from '../../utils/excelGenerator';
 import ParcelModal from '../../components/modals/ParcelModal';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 
@@ -132,6 +134,18 @@ const ParcelList: React.FC<ParcelListProps> = ({ onViewDetail }) => {
     setParcelToDelete(null);
   };
 
+  const handlePrintLabel = (parcel: any) => {
+    generateParcelLabel(parcel);
+  };
+
+  const handleExportPDF = () => {
+    generateParcelReport(filteredParcels);
+  };
+
+  const handleExportExcel = () => {
+    generateParcelExcel(filteredParcels);
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -147,6 +161,22 @@ const ParcelList: React.FC<ParcelListProps> = ({ onViewDetail }) => {
           <Plus className="w-4 h-4" />
           <span>Add New Parcel</span>
         </button>
+        <div className="flex items-center space-x-2">
+          <button 
+            onClick={handleExportPDF}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2"
+          >
+            <Printer className="w-4 h-4" />
+            <span>Export PDF</span>
+          </button>
+          <button 
+            onClick={handleExportExcel}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
+          >
+            <Printer className="w-4 h-4" />
+            <span>Export Excel</span>
+          </button>
+        </div>
       </div>
 
       {/* Search and Filters */}
@@ -257,10 +287,11 @@ const ParcelList: React.FC<ParcelListProps> = ({ onViewDetail }) => {
                           <UserPlus className="w-4 h-4" />
                         </button>
                       )}
-                      <button className="p-2 text-orange-600 hover:bg-orange-100 rounded-lg transition-colors" title="Print Label">
-                        <Printer className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 text-orange-600 hover:bg-orange-100 rounded-lg transition-colors" title="Print Label">
+                      <button 
+                        onClick={() => handlePrintLabel(parcel)}
+                        className="p-2 text-orange-600 hover:bg-orange-100 rounded-lg transition-colors" 
+                        title="Print Label"
+                      >
                         <Printer className="w-4 h-4" />
                       </button>
                       <button 
